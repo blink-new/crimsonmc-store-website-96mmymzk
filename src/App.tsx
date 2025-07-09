@@ -191,7 +191,10 @@ export default function App() {
                 {[
                   { id: 1, name: '1,000 Coins', price: 4 },
                   { id: 2, name: '5,000 Coins', price: 6 },
-                  { id: 3, name: '100,000 Coins', price: 8 },
+                  { id: 3, name: '10,000 Coins', price: 8 },
+                  { id: 4, name: '20,000 Coins', price: 14 },
+                  { id: 5, name: '25,000 Coins', price: 17 },
+                  { id: 6, name: '30,000 Coins', price: 20 },
                 ].map(coin => (
                   <div key={coin.id} className="bg-gray-800/70 rounded-xl p-6 flex flex-col gap-3 border border-yellow-500/30 items-center">
                     <div className="font-bold text-2xl text-yellow-200 mb-2">{coin.name}</div>
