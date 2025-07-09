@@ -23,12 +23,23 @@ export default function App() {
   const [adminLoginOpen, setAdminLoginOpen] = useState(false);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [user, setUser] = useState<{ ign: string; avatarUrl: string } | null>(null);
+  const [welcomeBackMessage, setWelcomeBackMessage] = useState('');
   const [topCustomer, setTopCustomer] = useState<{ ign: string; amount: number; avatarUrl: string } | null>(null);
   const [quantitySelect, setQuantitySelect] = useState<{ id: number; open: boolean }>({ id: -1, open: false });
   const [pendingQty, setPendingQty] = useState(1);
   const [page, setPage] = useState<'home' | 'ranks' | 'coins' | 'crates' | 'admin'>('home');
   const [orders, setOrders] = useState([]);
   const [purchaseConfirmedOpen, setPurchaseConfirmedOpen] = useState(false);
+
+  const handleLogin = (user: { ign: string; avatarUrl: string }, isNewUser: boolean) => {
+    setUser(user);
+    if (!isNewUser) {
+      setWelcomeBackMessage(`Welcome back, ${user.ign}!`);
+      setTimeout(() => {
+        setWelcomeBackMessage('');
+      }, 3000);
+    }
+  };
 
   // Add to cart with quantity selection
   const handleAddToCart = (item: { id: number; name: string; price: number }) => {
@@ -58,7 +69,7 @@ export default function App() {
         userName: user.ign,
         userAvatar: user.avatarUrl,
         items: cart.map(item => ({ name: item.name, quantity: item.quantity, price: item.price })),
-        totalPrice: cart.reduce((sum, i) => sum + i.price * i.quantity, 0) * (1 - discountPercent / 100),
+        totalPrice: cart.reduce((sum, i) => sum + i.price * i.quantity, 0),
         timestamp: new Date().toLocaleString(),
       };
       setOrders(prev => [...prev, newOrder]);
@@ -72,7 +83,6 @@ export default function App() {
     setCartOpen(false);
     setPurchaseConfirmedOpen(true);
   };
-  const discountPercent = user ? 5 : 0;
 
   // Admin logic
   const handleAdminLogin = (password: string) => {
@@ -96,7 +106,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-950 text-white">
       {/* Banner Header */}
       <header className="relative w-full">
         <img
@@ -138,6 +148,12 @@ export default function App() {
         </div>
       </header>
 
+      {welcomeBackMessage && (
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-2 rounded-full shadow-lg z-50 animate-bounce">
+          {welcomeBackMessage}
+        </div>
+      )}
+
       {/* Main Centered Layout */}
       <section className="flex flex-col md:flex-row justify-center items-start gap-8 py-16 min-h-[500px]">
         <Sidebar
@@ -151,42 +167,42 @@ export default function App() {
         <div className="w-full max-w-xl flex flex-col justify-center">
           {page === 'home' && (
             <>
-              <div className="bg-gradient-to-br from-red-900/80 to-gray-900/90 border border-red-700/40 rounded-2xl shadow-2xl p-8 text-left text-white space-y-5 mb-8">
-                <h2 className="text-2xl font-extrabold tracking-tight text-yellow-300 mb-2">CrimsonMC Store</h2>
-                <h3 className="text-lg font-semibold text-red-300 mb-2">Welcome</h3>
-                <p className="text-sm text-gray-200 mb-2">
+              <div className="bg-gradient-to-br from-blue-900/80 to-blue-800/90 border border-blue-700/40 rounded-2xl shadow-2xl p-8 text-left text-white space-y-5 mb-8">
+                <h2 className="text-2xl font-extrabold tracking-tight text-cyan-300 mb-2">CrimsonMC Store</h2>
+                <h3 className="text-lg font-semibold text-blue-300 mb-2">Welcome</h3>
+                <p className="text-sm text-blue-200 mb-2">
                   If you've completed a purchase but haven't received your items, please open a support ticket on our Discord server for assistance. For any billing concerns or payment-related questions, you can also create a ticket, and our team will respond within 48 hours.
                 </p>
-                <h4 className="text-base font-bold text-red-400 mt-4 mb-1">Refund Policy</h4>
-                <p className="text-sm text-gray-200 mb-2">
+                <h4 className="text-base font-bold text-blue-400 mt-4 mb-1">Refund Policy</h4>
+                <p className="text-sm text-blue-200 mb-2">
                   All purchases are final and non-refundable. Initiating a chargeback or disputing a payment through PayPal will lead to a permanent and irreversible ban from all our servers and associated Minecraft stores.
                 </p>
-                <p className="text-sm text-gray-200 mb-2">
+                <p className="text-sm text-blue-200 mb-2">
                   Please allow up to 20 minutes for your purchase to be processed in-game. If you do not receive your items within this timeframe, submit a support ticket on our Discord server with proof of purchase, and we will look into the issue.
                 </p>
-                <p className="text-xs text-gray-400 mt-4">
+                <p className="text-xs text-blue-400 mt-4">
                   CrimsonMC is not affiliated with or endorsed by Minecraft, Mojang or Microsoft.
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="bg-gray-800/50 border-gray-700/50 hover:border-red-500/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('ranks')}>
-                  <h3 className="text-xl font-bold text-white group-hover:text-red-400">Ranks</h3>
-                  <p className="text-gray-400">Unlock exclusive perks and commands.</p>
+                <div className="bg-blue-800/50 border-blue-700/50 hover:border-cyan-500/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('ranks')}>
+                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-400">Ranks</h3>
+                  <p className="text-blue-400">Unlock exclusive perks and commands.</p>
                 </div>
-                <div className="bg-gray-800/50 border-gray-700/50 hover:border-yellow-400/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('coins')}>
-                  <h3 className="text-xl font-bold text-yellow-300 group-hover:text-yellow-400">Coins</h3>
-                  <p className="text-gray-400">Buy coins for in-game perks.</p>
+                <div className="bg-blue-800/50 border-blue-700/50 hover:border-cyan-400/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('coins')}>
+                  <h3 className="text-xl font-bold text-cyan-300 group-hover:text-cyan-400">Coins</h3>
+                  <p className="text-blue-400">Buy coins for in-game perks.</p>
                 </div>
-                <div className="bg-gray-800/50 border-gray-700/50 hover:border-red-500/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('crates')}>
-                  <h3 className="text-xl font-bold text-white group-hover:text-red-400">Crates</h3>
-                  <p className="text-gray-400">Get rare items and unique rewards.</p>
+                <div className="bg-blue-800/50 border-blue-700/50 hover:border-cyan-500/50 transition-all duration-300 group rounded-xl p-6 text-center cursor-pointer" onClick={() => goTo('crates')}>
+                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-400">Crates</h3>
+                  <p className="text-blue-400">Get rare items and unique rewards.</p>
                 </div>
               </div>
             </>
           )}
           {page === 'coins' && (
-            <div className="bg-gradient-to-br from-yellow-900/80 to-gray-800/90 border border-yellow-500/40 rounded-2xl shadow-2xl p-8 text-center text-white space-y-8">
-              <h2 className="text-3xl font-bold text-yellow-300 mb-8">Coins</h2>
+            <div className="bg-gradient-to-br from-blue-900/80 to-blue-800/90 border border-cyan-700/40 rounded-2xl shadow-2xl p-8 text-center text-white space-y-8">
+              <h2 className="text-3xl font-bold text-cyan-300 mb-8">Coins</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {[
                   { id: 1, name: '1,000 Coins', price: 4 },
@@ -196,11 +212,11 @@ export default function App() {
                   { id: 5, name: '25,000 Coins', price: 17 },
                   { id: 6, name: '30,000 Coins', price: 20 },
                 ].map(coin => (
-                  <div key={coin.id} className="bg-gray-800/70 rounded-xl p-6 flex flex-col gap-3 border border-yellow-500/30 items-center">
-                    <div className="font-bold text-2xl text-yellow-200 mb-2">{coin.name}</div>
-                    <div className="text-yellow-300 font-bold text-xl mb-4">${coin.price.toFixed(2)}</div>
+                  <div key={coin.id} className="bg-blue-800/70 rounded-xl p-6 flex flex-col gap-3 border border-cyan-500/30 items-center">
+                    <div className="font-bold text-2xl text-cyan-200 mb-2">{coin.name}</div>
+                    <div className="text-cyan-300 font-bold text-xl mb-4">${coin.price.toFixed(2)}</div>
                     <Button
-                      className="bg-yellow-400 hover:bg-yellow-500 text-black mt-2 font-bold"
+                      className="bg-cyan-400 hover:bg-cyan-500 text-black mt-2 font-bold"
                       onClick={() => handleAddToCart({ id: 1000 + coin.id, name: coin.name, price: coin.price })}
                     >
                       Add to Cart
@@ -210,28 +226,9 @@ export default function App() {
               </div>
             </div>
           )}
-          {page === 'ranks' && (
-            <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/90 border border-red-700/40 rounded-2xl shadow-2xl p-8 text-center text-white space-y-8">
-              <h2 className="text-3xl font-bold text-red-400 mb-8">Ranks</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {RANKS.map(rank => (
-                  <div key={rank.id} className="bg-gray-800/70 rounded-xl p-6 flex flex-col gap-3 border border-red-700/30 items-center">
-                    <div className="font-bold text-2xl text-yellow-200 mb-2">{rank.name}</div>
-                    <div className="text-red-300 font-bold text-xl mb-4">${rank.price.toFixed(2)}</div>
-                    <Button
-                      className="bg-red-600 hover:bg-red-700 text-white mt-2"
-                      onClick={() => handleAddToCart(rank)}
-                    >
-                      Add to Cart
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
           {page === 'crates' && (
-            <div className="bg-gradient-to-br from-gray-900/80 to-gray-800/90 border border-red-700/40 rounded-2xl shadow-2xl p-8 text-center text-white space-y-8">
-              <h2 className="text-3xl font-bold text-red-400 mb-8">Crates</h2>
+            <div className="bg-gradient-to-br from-blue-900/80 to-blue-800/90 border border-cyan-700/40 rounded-2xl shadow-2xl p-8 text-center text-white space-y-8">
+              <h2 className="text-3xl font-bold text-cyan-300 mb-8">Crates</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {[
                   { id: 1, name: 'Common Crate', price: 10 },
@@ -241,11 +238,11 @@ export default function App() {
                   { id: 5, name: 'Compressed Crate', price: 26 },
                   { id: 6, name: 'Crimson Crate', price: 30 },
                 ].map(crate => (
-                  <div key={crate.id} className="bg-gray-800/70 rounded-xl p-6 flex flex-col gap-3 border border-red-700/30 items-center">
-                    <div className="font-bold text-2xl text-yellow-200 mb-2">{crate.name}</div>
-                    <div className="text-red-300 font-bold text-xl mb-4">${crate.price.toFixed(2)}</div>
+                  <div key={crate.id} className="bg-blue-800/70 rounded-xl p-6 flex flex-col gap-3 border border-cyan-500/30 items-center">
+                    <div className="font-bold text-2xl text-cyan-200 mb-2">{crate.name}</div>
+                    <div className="text-cyan-300 font-bold text-xl mb-4">${crate.price.toFixed(2)}</div>
                     <Button
-                      className="bg-red-600 hover:bg-red-700 text-white mt-2"
+                      className="bg-cyan-400 hover:bg-cyan-500 text-black mt-2 font-bold"
                       onClick={() => handleAddToCart(crate)}
                     >
                       Add to Cart
@@ -268,9 +265,11 @@ export default function App() {
       </section>
 
       {/* Login/Register Modal */}
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} onLogin={setUser} />
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} onLogin={handleLogin} />
+
       {/* Admin Login Modal */}
       <AdminLoginModal open={adminLoginOpen} onClose={() => setAdminLoginOpen(false)} onLogin={handleAdminLogin} />
+
       {/* Cart Drawer/Overlay */}
       <CartDrawer
         open={cartOpen}
@@ -279,7 +278,6 @@ export default function App() {
         onRemove={handleRemove}
         onQuantityChange={handleQtyChange}
         onCheckout={handleCheckout}
-        discountPercent={discountPercent}
       />
 
       {/* Quantity selector modal */}

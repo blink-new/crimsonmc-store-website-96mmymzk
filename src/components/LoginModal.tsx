@@ -1,16 +1,23 @@
 import React, { useRef, useState } from 'react';
-import { X } from 'lucide-react';
+
+interface User {
+  ign: string;
+  avatarUrl: string;
+  password: string;
+}
 
 interface LoginModalProps {
   open: boolean;
   onClose: () => void;
-  onLogin: (user: { ign: string; avatarUrl: string; password: string }) => void;
+  onLogin: (user: User, isNewUser: boolean) => void;
 }
 
 export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) {
+  const [isLogin, setIsLogin] = useState(true);
   const [ign, setIgn] = useState('');
   const [password, setPassword] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!open) return null;
@@ -28,9 +35,38 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!ign || !password) return;
-    onLogin({ ign, avatarUrl: avatarUrl || '/mc-head.png', password });
-    onClose();
+    setError('');
+    if (!ign || !password) {
+      setError('Please enter both IGN and password.');
+      return;
+    }
+
+    const usersJson = localStorage.getItem('users');
+    const users: User[] = usersJson ? JSON.parse(usersJson) : [];
+    const existingUser = users.find(u => u.ign.toLowerCase() === ign.toLowerCase());
+
+    if (isLogin) {
+      if (existingUser && existingUser.password === password) {
+        onLogin(existingUser, false);
+        onClose();
+      } else {
+        setError('Invalid IGN or password.');
+      }
+    } else {
+      if (existingUser) {
+        setError('This IGN is already taken.');
+      } else {
+        const newUser: User = {
+          ign,
+          avatarUrl: avatarUrl || '/mc-head.png',
+          password
+        };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        onLogin(newUser, true);
+        onClose();
+      }
+    }
   };
 
   return (
@@ -40,34 +76,36 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
           className="absolute top-3 right-3 text-gray-400 hover:text-red-400"
           onClick={onClose}
         >
-          <X className="w-6 h-6" />
+          ✕
         </button>
-        <h2 className="text-2xl font-bold text-red-400 mb-4 text-center">Login / Register</h2>
+        <h2 className="text-2xl font-bold text-red-400 mb-4 text-center">{isLogin ? 'Login' : 'Register'}</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col items-center gap-2">
-            <label htmlFor="avatar-upload" className="cursor-pointer">
-              <img
-                src={avatarUrl || '/mc-head.png'}
-                alt="Profile Preview"
-                className="w-20 h-20 rounded-full border-4 border-red-500 object-cover"
+          {!isLogin && (
+            <div className="flex flex-col items-center gap-2">
+              <label htmlFor="avatar-upload" className="cursor-pointer">
+                <img
+                  src={avatarUrl || '/mc-head.png'}
+                  alt="Profile Preview"
+                  className="w-20 h-20 rounded-full border-4 border-red-500 object-cover"
+                />
+              </label>
+              <input
+                id="avatar-upload"
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
               />
-            </label>
-            <input
-              id="avatar-upload"
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarChange}
-            />
-            <button
-              type="button"
-              className="text-xs text-red-300 underline hover:text-red-400"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              Upload Profile Pic
-            </button>
-          </div>
+              <button
+                type="button"
+                className="text-xs text-red-300 underline hover:text-red-400"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Upload Profile Pic
+              </button>
+            </div>
+          )}
           <input
             type="text"
             placeholder="Enter your IGN (Minecraft username)"
@@ -84,15 +122,18 @@ export default function LoginModal({ open, onClose, onLogin }: LoginModalProps) 
             onChange={e => setPassword(e.target.value)}
             required
           />
+          {error && <div className="text-red-400 text-sm text-center">{error}</div>}
           <button
             type="submit"
             className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg mt-2 transition-colors"
           >
-            Login / Register
+            {isLogin ? 'Login' : 'Register'}
           </button>
         </form>
-        <div className="text-xs text-gray-400 mt-4 text-center">
-          Registering gives you a 5% discount on all purchases!
+        <div className="text-center mt-4">
+          <button onClick={() => setIsLogin(!isLogin)} className="text-sm text-blue-400 hover:underline">
+            {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}
+          </button>
         </div>
       </div>
     </div>
