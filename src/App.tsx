@@ -234,9 +234,12 @@ export default function App() {
               <h2 className="text-3xl font-bold text-red-400 mb-8">Crates</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {[
-                  { id: 1, name: 'Small Crate', price: 10 },
-                  { id: 2, name: 'Medium Crate', price: 20 },
-                  { id: 3, name: 'Large Crate', price: 30 },
+                  { id: 1, name: 'Common Crate', price: 10 },
+                  { id: 2, name: 'Uncommon Crate', price: 14 },
+                  { id: 3, name: 'Summer Crate', price: 18 },
+                  { id: 4, name: 'Rare Crate', price: 22 },
+                  { id: 5, name: 'Compressed Crate', price: 26 },
+                  { id: 6, name: 'Crimson Crate', price: 30 },
                 ].map(crate => (
                   <div key={crate.id} className="bg-gray-800/70 rounded-xl p-6 flex flex-col gap-3 border border-red-700/30 items-center">
                     <div className="font-bold text-2xl text-yellow-200 mb-2">{crate.name}</div>
